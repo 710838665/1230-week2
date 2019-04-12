@@ -1,0 +1,2458 @@
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+	<xsl:output method="xml" indent="yes" encoding="utf-16" />
+
+	<xsl:template  match="/">
+
+		<!-- Dimension List -->
+		<DataSet>
+			<xsl:variable name="drawingunits" select=".//DrawingUOM/UOM/text()"/>
+			<xsl:variable name="buildingUnits" select=".//BuildingUOM/UOM/text()"/>
+			<xsl:apply-templates select=".//DIM_Property">
+				<xsl:with-param name="drawingUOM" select="$drawingunits"/>
+				<xsl:with-param name="buildingUOM" select="$buildingUnits"/>
+			</xsl:apply-templates>
+		</DataSet>
+	</xsl:template>
+
+	<!--xsl:template match="Property/E3D_PROPERTIES">-->
+	<xsl:template match="DIM_Property">
+		<xsl:param name="drawingUOM"/>
+		<xsl:param name="buildingUOM"/>
+
+		<!-- Calculate all naming values -->
+		<xsl:variable name="duplicateId"><xsl:choose>
+				<xsl:when test=".//Property[@Name='DUPLICATE_ID']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='DUPLICATE_ID']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='DUPLICATE_ID']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="dimensionId">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Id']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Id']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Id']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="dimensionName">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='_name']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='_name']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='_name']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="objectName">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Object Name']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Object Name']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Object Name']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="familyName">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Family Name']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Family Name']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Family Name']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="typeName">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Type Name']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Type Name']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Type Name']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="originalFamilyName">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Original Family']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Original Family']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Original Family']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="originalTypeName">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Original Type']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Original Type']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Original Type']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="originalCategory">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Original Category']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Original Category']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Original Category']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="originalFamilyAndType" select=".//Property[@Name='Original Family and Type']/text()"/>-->
+
+		<xsl:variable name="originalFamilyAndType">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Original Family and Type']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Original Family and Type']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Original Family and Type']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="materialFromIdentityData" select=".//Property[@Name='Material'][@Category='Identity Data']/text()"/> -->
+
+		<xsl:variable name="materialFromIdentityData">
+			<xsl:choose>
+				<xsl:when test="(string-length(.//Property[@Name='Material'][@Category='Identity Data']/text()) != 0)">
+					<xsl:value-of select=".//Property[@Name='Material'][@Category='Identity Data']/text()"/>
+				</xsl:when>
+				<xsl:when test="(string-length(.//Property[@Name='Material'][@Category='Identity Data']/text()) != 0)">
+					<xsl:value-of select=".//Property[@Name='Material'][@Category='Identity Data']/text()"/>
+				</xsl:when>
+				<xsl:when test="(string-length(.//Property[@Name='Material'][@Category='Identity Data']/text()) != 0)">
+					<xsl:value-of select=".//Property[@Name='Material'][@Category='Identity Data']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Material'][@Category='Identity Data']/text()"/> 
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="thickness" select=".//Property[@Name='Thickness']/text()"/>	 -->
+
+		<xsl:variable name="thickness">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Thickness']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Thickness']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Thickness']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="layerFunction" select=".//Property[@Name='Layer Function']/text()"/>		 -->
+
+		<xsl:variable name="layerFunction">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Layer Function']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Layer Function']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Layer Function']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="Name" select=".//Property[@Name='Name']/text()"/> -->
+
+		<xsl:variable name="Name">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Name']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Name']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Name']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="baseConstraint" select=".//Property[@Name='Base Constraint']/text()"/> -->
+
+		<xsl:variable name="baseConstraint">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Base Constraint']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Base Constraint']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Base Constraint']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="baseLevel" select=".//Property[@Name='Base Level']/text()"/> -->
+
+		<xsl:variable name="baseLevel">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Base Level']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Base Level']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Base Level']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="level" select=".//Property[@Name='Level']/text()"/> -->
+
+		<xsl:variable name="level">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Level']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Level']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Level']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="levelzone" select=".//Property[@Name='Level/Zone']/text()"/> -->
+
+		<xsl:variable name="levelzone">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Level/Zone']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Level/Zone']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Level/Zone']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="reflevel" select=".//Property[@Name='Reference Level']/text()"/> -->
+
+		<xsl:variable name="reflevel">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Reference Level']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Reference Level']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Reference Level']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="diameter" select=".//Property[@Name='Diameter']/text()"/> -->
+
+		<xsl:variable name="diameter">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Diameter']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Diameter']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Diameter']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="size" select=".//Property[@Name='Size']/text()"/> -->
+
+		<xsl:variable name="size">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Size']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Size']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Size']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="concreteStrength" select=".//Property[@Name='Concrete Strength']/text()"/> -->
+
+		<xsl:variable name="concreteStrength">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Concrete Strength']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Concrete Strength']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Concrete Strength']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="keynote" select=".//Property[@Name='Keynote']/text()"/> -->
+
+		<xsl:variable name="keynote">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Keynote']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Keynote']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Keynote']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="profileFromConstruction" select=".//Property[@Name='Profile'][@Category='Construction']/text()"/>	 -->
+
+		<xsl:variable name="profileFromConstruction">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Profile']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Profile'][@Category='Construction']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Profile'][@Category='Construction']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="exBIMId" select=".//Property[@Name='EXBIMID']/text()"/> -->
+
+		<xsl:variable name="exBIMId">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='EXBIMID']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='EXBIMID']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='EXBIMID']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="exRevitId" select=".//Property[@Name='EXREVITID']/text()"/> -->
+
+		<xsl:variable name="exRevitId">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='EXREVITID']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='EXREVITID']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='EXREVITID']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="space"><xsl:text> </xsl:text></xsl:variable>
+		<xsl:variable name="spacer"><xsl:value-of select="$space"/>-<xsl:value-of select="$space"/></xsl:variable>
+		<xsl:variable name="closeBracket">)</xsl:variable>
+		<xsl:variable name="dashSpace">-<xsl:value-of select="$space"/></xsl:variable>
+
+		<!-- <xsl:variable name="categoryOfId" select=".//Property[@Name='Id']/@Category"/> -->
+
+		<xsl:variable name="categoryOfId">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Id']/@Category != ''">
+					<xsl:value-of select=".//Property[@Name='Id']/@Category"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Id']/@Category"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="categoryOfAssemblyCode" select=".//Property[@Name='Assembly Code']/@Category"/> -->
+
+		<xsl:variable name="categoryOfAssemblyCode">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Assembly Code']/@Category != ''">
+					<xsl:value-of select=".//Property[@Name='Assembly Code']/@Category"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Assembly Code']/@Category"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="categoryOfIdStripped">
+			<xsl:choose>
+				<xsl:when test="string-length(substring-before($categoryOfId, ' [')) != 0">
+					<xsl:value-of select="substring-before($categoryOfId, ' [')"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$categoryOfId"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- Calculate Category -->
+		<!-- <xsl:variable name="qsid" select=".//Property[@Name='QSID']/text()"/> -->
+
+		<xsl:variable name="qsid">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='QSID']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='QSID']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='QSID']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="ElementCode" select=".//Property[@Name='E-ELEMENT CODE']/text()"/> -->
+
+		<xsl:variable name="ElementCode">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='E-ELEMENT CODE']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='E-ELEMENT CODE']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='E-ELEMENT CODE']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="asmm" select=".//Property[@Name='ASMM']/text()"/> -->
+
+		<xsl:variable name="asmm">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='ASMM']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='ASMM']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='ASMM']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="level1" select=".//Property[@Name='Level1']/text()"/> -->
+
+		<xsl:variable name="level1">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Level1']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Level1']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Level1']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="level2" select=".//Property[@Name='Level2']/text()"/> -->
+
+		<xsl:variable name="level2">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Level2']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Level2']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Level2']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="level3" select=".//Property[@Name='Level3']/text()"/> -->
+
+		<xsl:variable name="level3">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Level3']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Level3']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Level3']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="level4" select=".//Property[@Name='Level4']/text()"/> -->
+
+		<xsl:variable name="level4">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Level4']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Level4']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Level4']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="level5" select=".//Property[@Name='Level5']/text()"/> -->
+
+		<xsl:variable name="level5">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Level5']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Level5']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Level5']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="categoryTop_name" select="Property/E3D_PROPERTIES/Property[@Name='_name']/text()"/>  -->
+
+		<xsl:variable name="categoryTop_name">
+			<xsl:choose>
+				<xsl:when test="Property/E3D_PROPERTIES/Property[@Name='_name']/text() != ''">
+					<xsl:value-of select="Property/E3D_PROPERTIES/Property[@Name='_name']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="Property/E3D_PROPERTIES/Property[@Name='_name']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="categoryUp5Lvls_name" select=".//Property[@Name='EXBIMID']/../../../../../Property[@Name='_name']/text()"/> -->
+
+		<xsl:variable name="categoryUp5Lvls_name">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='EXBIMID']/../../../../../Property[@Name='_name']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='EXBIMID']/../../../../../Property[@Name='_name']/text()"/>
+				</xsl:when>
+				<xsl:when test=".//Property[@Name='EXBIMID']/../../../../../Property[@Name='_name']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='EXBIMID']/../../../../../Property[@Name='_name']/text()"/>
+				</xsl:when>
+				<xsl:when test=".//Property[@Name='EXBIMID']/../../../../../Property[@Name='_name']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='EXBIMID']/../../../../../Property[@Name='_name']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='EXBIMID']/../../../../../Property[@Name='_name']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="categoryUp4Lvls_name" select=".//Property[@Name='EXBIMID']/../../../../Property[@Name='_name']/text()"/> -->
+
+		<xsl:variable name="categoryUp4Lvls_name">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='EXBIMID']/../../../../Property[@Name='_name']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='EXBIMID']/../../../../Property[@Name='_name']/text()"/>
+				</xsl:when>
+				<xsl:when test=".//Property[@Name='EXBIMID']/../../../../Property[@Name='_name']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='EXBIMID']/../../../../Property[@Name='_name']/text()"/>
+				</xsl:when>
+				<xsl:when test=".//Property[@Name='EXBIMID']/../../../../Property[@Name='_name']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='EXBIMID']/../../../../Property[@Name='_name']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='EXBIMID']/../../../../Property[@Name='_name']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="categoryUp3Lvls_name" select=".//Property[@Name='EXBIMID']/../../../Property[@Name='_name']/text()"/> -->
+
+		<xsl:variable name="categoryUp3Lvls_name">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='EXBIMID']/../../../Property[@Name='_name']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='EXBIMID']/../../../Property[@Name='_name']/text()"/>
+				</xsl:when>
+				<xsl:when test=".//Property[@Name='EXBIMID']/../../../Property[@Name='_name']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='EXBIMID']/../../../Property[@Name='_name']/text()"/>
+				</xsl:when>
+				<xsl:when test=".//Property[@Name='EXBIMID']/../../../Property[@Name='_name']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='EXBIMID']/../../../Property[@Name='_name']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='EXBIMID']/../../../Property[@Name='_name']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="category">
+			<xsl:choose>
+				<xsl:when test="string-length($level1) != 0">
+					<xsl:choose>
+						<!-- Parts (start) -->
+						<xsl:when test="(($level1 = 'Parts') or ($level1 = 'Part') or ($level1 = 'Parts') or ($level1 = 'Part')) and (string-length($originalCategory) != 0)">
+							<xsl:value-of select="$originalCategory"/>
+						</xsl:when>
+						<!-- Parts (end) -->
+						<xsl:otherwise>	
+							<xsl:value-of select="$level1"/>
+						</xsl:otherwise>
+					</xsl:choose>					
+				</xsl:when>
+				<xsl:when test="string-length($categoryUp5Lvls_name) != 0">
+					<xsl:value-of select="$categoryUp5Lvls_name"/>
+				</xsl:when>
+				<xsl:when test="string-length($categoryUp4Lvls_name) != 0">
+					<xsl:value-of select="$categoryUp4Lvls_name"/>
+				</xsl:when>
+				<xsl:when test="string-length($categoryTop_name) != 0">
+					<xsl:value-of select="$categoryTop_name"/>
+				</xsl:when>                        		
+				<xsl:when test="string-length($familyName) != 0">
+					<xsl:value-of select="$familyName"/>
+				</xsl:when>                        	
+				<xsl:when test="string-length($categoryOfIdStripped) != 0">
+					<xsl:value-of select="$categoryOfIdStripped"/>
+				</xsl:when>
+			</xsl:choose>
+		</xsl:variable>	 		
+		<xsl:variable name="categoryStripped">
+			<xsl:choose>
+				<xsl:when test="string-length(substring-before($category, ' (')) != 0">
+					<xsl:value-of select="substring-before($category, ' (')"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$category"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="categoryChild">
+			<xsl:choose>
+				<xsl:when test="$category = $level1">
+					<xsl:value-of select="$level2"/>
+				</xsl:when>
+				<xsl:when test="$category = $level2">
+					<xsl:value-of select="$level3"/>
+				</xsl:when>		
+				<xsl:when test="string-length($categoryUp5Lvls_name) != 0">
+					<xsl:value-of select="$categoryUp4Lvls_name"/>
+				</xsl:when>
+				<xsl:when test="string-length($categoryUp4Lvls_name) != 0">
+					<xsl:value-of select="$categoryUp3Lvls_name"/>
+				</xsl:when>
+				<xsl:when test="string-length($categoryTop_name) != 0">
+					<!-- <xsl:value-of select="Property/E3D_PROPERTIES/Property[@Name='_name']/Property[@Name='_name']/text()"/>  -->
+					<xsl:choose>
+						<xsl:when test="Property/E3D_PROPERTIES/Property[@Name='_name']/Property[@Name='_name']/text() != ''">
+							<xsl:value-of select="Property/E3D_PROPERTIES/Property[@Name='_name']/Property[@Name='_name']/text()"/>
+						</xsl:when>
+						<xsl:when test="Property/E3D_PROPERTIES/Property[@Name='_name']/Property[@Name='_name']/text() != ''">
+							<xsl:value-of select="Property/E3D_PROPERTIES/Property[@Name='_name']/Property[@Name='_name']/text()"/>
+						</xsl:when>
+						<xsl:when test="Property/E3D_PROPERTIES/Property[@Name='_name']/Property[@Name='_name']/text() != ''">
+							<xsl:value-of select="Property/E3D_PROPERTIES/Property[@Name='_name']/Property[@Name='_name']/text()"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="Property/E3D_PROPERTIES/Property[@Name='_name']/Property[@Name='_name']/text()"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>                        		
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:variable name="categoryChildStripped">
+			<xsl:choose>
+				<xsl:when test="string-length(substring-before($categoryChild, ' (')) != 0">
+					<xsl:value-of select="substring-before($categoryChild, ' (')"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$categoryChild"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- Calculate zone -->
+		<!--  <xsl:variable name="zone">IF([Level]="",IF([Base Level]="",IF([Base Constraint]="",IF([Level/Zone]="",IF([Reference Level]="","",[Reference Level]),[Level/Zone]),[Base Constraint]),[Base Level]),[Level])</xsl:variable> -->
+		<xsl:variable name="zone">IF([Level]="",IF([Level]="",IF([Base Level]="",IF([Base Level]="",IF([Base Constraint]="",IF([Base Constraint]="",IF([Level/Zone]="",IF([Level/Zone]="",IF([Reference Level]="",IF([Reference Level]="","",[Reference Level]),[Reference Level]),[Level/Zone]),[Level/Zone]),[Base Constraint]),[Base Constraint]),[Base Level]),[Base Level]),[Level]),[Level])</xsl:variable> 
+
+		<!-- Calculate Divisions -->
+		<!-- <xsl:variable name="phaseId" select=".//Property[@Name='Phase Id']/text()"/> -->
+		<xsl:variable name="phaseId">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Phase Id']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Phase Id']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Phase Id']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="Division_StartPhase">[Phase Id]</xsl:variable> -->
+		<xsl:variable name="Division_StartPhase">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Phase Id']/text() != ''">
+					[Phase Id]
+				</xsl:when>
+				<xsl:otherwise>
+					[Phase Id]
+				</xsl:otherwise>
+			</xsl:choose>	
+		</xsl:variable>
+		<xsl:variable name="Division_EndPhase"/><!-- <xsl:variable name="Division_Location">IF([Level]="",IF([Base Level]="",IF([Base Constraint]="",IF([Level/Zone]="",IF([Reference Level]="","",[Reference Level]),[Level/Zone]),[Base Constraint]),[Base Level]),[Level])</xsl:variable> -->
+		<xsl:variable name="Division_Location">IF([Level]="",IF([Level]="",IF([Base Level]="",IF([Base Level]="",IF([Base Constraint]="",IF([Base Constraint]="",IF([Level/Zone]="",IF([Level/Zone]="",IF([Reference Level]="",IF([Reference Level]="","",[Reference Level]),[Reference Level]),[Level/Zone]),[Level/Zone]),[Base Constraint]),[Base Constraint]),[Base Level]),[Base Level]),[Level]),[Level])</xsl:variable>
+
+		<xsl:variable name="Division_Function"/>
+		<xsl:variable name="Division_Other"/>
+    <!-- Calculate dimension name -->
+		<xsl:variable name="dimensionNameValue">
+			<xsl:choose>
+				<!-- <xsl:when test="string-length($exRevitId) != 0">[EXREVITID]</xsl:when> -->
+				<xsl:when test="string-length($exRevitId) != 0">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='EXREVITID']/text() != ''">
+							[EXREVITID]
+						</xsl:when>
+						<xsl:otherwise>
+							[EXREVITID]
+						</xsl:otherwise>
+					</xsl:choose>	
+				</xsl:when>				
+				<!-- <xsl:when test="string-length($exBIMId) != 0">[EXBIMID]</xsl:when>	 -->
+				<xsl:when test="string-length($exBIMId) != 0">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='EXBIMID']/text() != ''">
+							[EXBIMID]
+						</xsl:when>
+						<xsl:otherwise>
+							[EXBIMID]
+						</xsl:otherwise>
+					</xsl:choose>	
+				</xsl:when>					
+				<!-- <xsl:when test="string-length($dimensionId) != 0">[Id]</xsl:when> -->
+				<xsl:when test="string-length($dimensionId) != 0">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='Id']/text() != ''">
+							[Id]
+						</xsl:when>
+						<xsl:otherwise>
+							[Id]
+						</xsl:otherwise>
+					</xsl:choose>	
+				</xsl:when>					
+				<!-- <xsl:when test="string-length($objectName) != 0">[Object Name]</xsl:when> -->
+				<xsl:when test="string-length($objectName) != 0">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='Object Name']/text() != ''">
+							[Object Name]
+						</xsl:when>
+						<xsl:otherwise>
+							[Object Name]
+						</xsl:otherwise>
+					</xsl:choose>	
+				</xsl:when>					
+				<!-- <xsl:when test="string-length($dimensionName) != 0">[_name]</xsl:when> -->
+				<xsl:when test="string-length($dimensionName) != 0">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='_name']/text() != ''">
+							[_name]
+						</xsl:when>
+						<xsl:otherwise>
+							[_name]
+						</xsl:otherwise>
+					</xsl:choose>	
+				</xsl:when>					
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- Calculate count -->
+		<xsl:variable name="count">
+			<!-- <xsl:if  test="string-length(.//Property[@Name = 'Count']/text()) != 0">[Count]</xsl:if> -->
+			<xsl:choose>
+				<xsl:when test="string-length(.//Property[@Name = 'Count']/text()) != 0">
+					[Count]
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:if  test="string-length(.//Property[@Name = 'Count']/text()) != 0">[Count]</xsl:if>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- Calculate height -->
+		<xsl:variable name="height">
+			<!-- <xsl:if  test="string-length(.//Property[@Name = 'Height']/text()) != 0">[Height]</xsl:if> -->
+			<xsl:choose>
+				<xsl:when test="string-length(.//Property[@Name = 'Height']/text()) != 0">
+					[Height]
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:if  test="string-length(.//Property[@Name = 'Height']/text()) != 0">[Height]</xsl:if>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+
+		<!-- Calculate weight value -->
+		<!-- <xsl:variable name="weight" select=".//Property[@Name='Weight']/text()"/> -->
+		<xsl:variable name="weight">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Weight']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Weight']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Weight']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="mass" select=".//Property[@Name='Mass']/text()"/> -->
+		<xsl:variable name="mass">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Mass']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Mass']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Mass']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+
+		<!-- Calculate weight value -->
+		<xsl:variable name="weightValue">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Mass']/text() != ''">
+					<xsl:if  test="string-length(.//Property[@Name = 'Mass']/text()) != 0">[Mass]</xsl:if>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:if  test="string-length(.//Property[@Name = 'Mass']/text()) != 0">[Mass]</xsl:if>
+				</xsl:otherwise>
+
+			</xsl:choose>
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Weight']/text() != ''">
+					<xsl:if  test="string-length(.//Property[@Name = 'Weight']/text()) != 0">[Weight]</xsl:if>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:if  test="string-length(.//Property[@Name = 'Weight']/text()) != 0">[Weight]</xsl:if>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- Calculate weight uom -->
+		<xsl:variable name="weightuom">
+			<!-- <xsl:if test="not((string-length(.//Property[@Name = 'Weight']/text()) = 0) and (string-length(.//Property[@Name = 'Mass']/text()) = 0))"> -->
+
+			<xsl:if test="not((string-length(.//Property[@Name = 'Weight']/text()) = 0) and (string-length(.//Property[@Name = 'Mass']/text()) = 0)
+				and (string-length(.//Property[@Name = 'Weight']/text()) = 0) and (string-length(.//Property[@Name = 'Mass']/text()) = 0)
+				and (string-length(.//Property[@Name = 'Weight']/text()) = 0) and (string-length(.//Property[@Name = 'Mass']/text()) = 0)
+				and (string-length(.//Property[@Name = 'Weight']/text()) = 0) and (string-length(.//Property[@Name = 'Mass']/text()) = 0))">
+				<xsl:choose>
+					<xsl:when test="contains($mass, 'kilograms')">"kg"</xsl:when>
+					<xsl:when test="contains($mass, 'kilograms')">"kg"</xsl:when>
+					<xsl:when test="contains($mass, 'kilogram')">"kg"</xsl:when>
+					<xsl:when test="contains($mass, 'kilogram')">"kg"</xsl:when>
+					<xsl:when test="contains($mass, 'kg')">"kg"</xsl:when>
+					<xsl:when test="contains($mass, 'kg')">"kg"</xsl:when>
+					<xsl:when test="contains($mass, 'lbmass')">"lb"</xsl:when>				
+					<xsl:when test="contains($mass, 'lbmass')">"lb"</xsl:when>				
+					<xsl:when test="contains($mass, 'lb')">"lb"</xsl:when>
+					<xsl:when test="contains($mass, 'lb')">"b"</xsl:when>
+					<xsl:when test="contains($mass, 't')">"t"</xsl:when>
+					<xsl:when test="contains($mass, 't')">"t"</xsl:when>
+					<xsl:when test="contains($mass, 'grams')">"g"</xsl:when>
+					<xsl:when test="contains($mass, 'grams')">"g"</xsl:when>
+					<xsl:when test="contains($mass, 'gram')">"g"</xsl:when>
+					<xsl:when test="contains($mass, 'gram')">"g"</xsl:when>
+					<xsl:when test="contains($mass, 'g')">"g"</xsl:when>
+					<xsl:when test="contains($mass, 'g')">"g"</xsl:when>
+					<xsl:when test="contains($weight, 'kilograms')">"kg"</xsl:when>
+					<xsl:when test="contains($weight, 'kilograms')">"kg"</xsl:when>
+					<xsl:when test="contains($weight, 'kilogram')">"kg"</xsl:when>
+					<xsl:when test="contains($weight, 'kilogram')">"kg"</xsl:when>
+					<xsl:when test="contains($weight, 'kg')">"kg"</xsl:when>
+					<xsl:when test="contains($weight, 'kg')">"kg"</xsl:when>
+					<xsl:when test="contains($weight, 'lbmass')">"lb"</xsl:when>					
+					<xsl:when test="contains($weight, 'lbmass')">"lb"</xsl:when>					
+					<xsl:when test="contains($weight, 'lb')">"lb"</xsl:when>
+					<xsl:when test="contains($weight, 'lb')">"lb"</xsl:when>
+					<xsl:when test="contains($weight, 't')">"t"</xsl:when>
+					<xsl:when test="contains($weight, 't')">"t"</xsl:when>
+					<xsl:when test="contains($weight, 'grams')">"g"</xsl:when>
+					<xsl:when test="contains($weight, 'grams')">"g"</xsl:when>
+					<xsl:when test="contains($weight, 'gram')">"g"</xsl:when>
+					<xsl:when test="contains($weight, 'gram')">"g"</xsl:when>
+					<xsl:when test="contains($weight, 'g')">"g"</xsl:when>					
+					<xsl:when test="contains($weight, 'g')">"g"</xsl:when>		
+				</xsl:choose>
+			</xsl:if>
+		</xsl:variable>
+		
+		<!-- Calculate custom fields -->
+		<!-- <xsl:variable name="actualNumberOfRisers" select=".//Property[@Name='Actual Number of Risers']/text()"/> -->
+		<xsl:variable name="actualNumberOfRisers">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Actual Number of Risers']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Actual Number of Risers']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Actual Number of Risers']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="actualRiserHeight" select=".//Property[@Name='Actual Riser Height']/text()"/>	 -->
+		<xsl:variable name="actualRiserHeight">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Actual Riser Height']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Actual Riser Height']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Actual Riser Height']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="width" select=".//Property[@Name='Width']/text()"/> -->
+		<xsl:variable name="width">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Width']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Width']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Width']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="cutLength" select=".//Property[@Name='Cut Length']/text()"/> -->
+		<xsl:variable name="cutLength">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Cut Length']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Cut Length']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Cut Length']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- <xsl:variable name="exteriorSurfaceArea" select=".//Property[@Name = 'Exterior Surface Area']/text()"/> -->
+		<xsl:variable name="exteriorSurfaceArea">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Exterior Surface Area']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Exterior Surface Area']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Exterior Surface Area']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<!-- <xsl:variable name="estimatedReVolume" select=".//Property[@Name = 'Estimated Reinforcement Volume']/text()"/> -->
+		<xsl:variable name="estimatedReVolume">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Estimated Reinforcement Volume']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Estimated Reinforcement Volume']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Estimated Reinforcement Volume']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>			
+		<!-- custom 1 fields -->
+		<xsl:variable name="custom1Name">
+			<xsl:choose>
+				<xsl:when test="($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs') or ($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs')">
+					<xsl:choose>
+						<!-- <xsl:when test="string-length($actualNumberOfRisers) != 0">"No. of Risers"</xsl:when> -->
+						<xsl:when test="string-length($actualNumberOfRisers) != 0">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Actual Number of Risers']/text() != ''">
+									"No. of Risers"
+								</xsl:when>
+								<xsl:when test=".//Property[@Name='Actual Number of Risers']/text() != ''">
+									"No. of Risers"
+								</xsl:when>
+								<xsl:when test="($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs')">
+									"No. of Risers"
+								</xsl:when>
+								<xsl:otherwise>
+									"No. of Risers"
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+					</xsl:choose>
+				</xsl:when>
+				<xsl:when test="($categoryStripped = 'Structural Framing') or ($level1 = 'Structural Framing') or ($level2 = 'Structural Framing')  or ($categoryStripped = 'Structural Framing') or ($level1 = 'Structural Framing') or ($level2 = 'Structural Framing')">
+					<xsl:choose>
+						<!-- <xsl:when test="string-length($cutLength) != 0">"Cut Length"</xsl:when> -->
+						<xsl:when test="string-length($cutLength) != 0">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Cut Length']/text() != ''">						
+									"Cut Length"
+								</xsl:when>
+								<xsl:when test=".//Property[@Name='Cut Length']/text() != ''">						
+									"Cut Length"
+								</xsl:when>
+								<xsl:when test="($categoryStripped = 'Structural Framing') or ($level1 = 'Structural Framing') or ($level2 = 'Structural Framing')">						
+									"Cut Length"
+								</xsl:when>
+								<xsl:otherwise>
+									"Cut Length"
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+					</xsl:choose>
+				</xsl:when>
+				<xsl:when test="($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor') or ($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor')">
+					<xsl:choose>
+						<!-- <xsl:when test="string-length($exteriorSurfaceArea) != 0">"Exterior Surface Area"</xsl:when> -->
+						<xsl:when test="string-length($exteriorSurfaceArea) != 0">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Exterior Surface Area']/text() != ''">						
+									"Exterior Surface Area"
+								</xsl:when>
+								<xsl:when test=".//Property[@Name='Exterior Surface Area']/text() != ''">						
+									"Exterior Surface Area"
+								</xsl:when>
+								<xsl:when test="($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor')">						
+									"Exterior Surface Area"
+								</xsl:when>
+								<xsl:otherwise>						
+									"Exterior Surface Area"
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+					</xsl:choose>
+				</xsl:when>				
+			</xsl:choose>
+		</xsl:variable>	
+
+		<xsl:variable name="custom1Value">
+			<xsl:choose>
+				<xsl:when test="($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs') or ($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs')">
+					<xsl:choose>
+						<xsl:when test="string-length($actualNumberOfRisers) != 0">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Actual Number of Risers']/text() != ''">
+									[Actual Number of Risers]
+								</xsl:when>
+								<xsl:when test=".//Property[@Name='Actual Number of Risers']/text() != ''">
+									[Actual Number of Risers]
+								</xsl:when>
+								<xsl:when test="($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs')">
+									[Actual Number of Risers]
+								</xsl:when>
+								<xsl:otherwise>
+									[Actual Number of Risers]
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+					</xsl:choose>
+				</xsl:when>
+				<xsl:when test="($categoryStripped = 'Structural Framing') or ($level1 = 'Structural Framing') or ($level2 = 'Structural Framing') or ($categoryStripped = 'Structural Framing') or ($level1 = 'Structural Framing') or ($level2 = 'Structural Framing')">
+					<xsl:choose>
+						<xsl:when test="string-length($cutLength) != 0">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Cut Length']/text() != ''">						
+									[Cut Length]
+								</xsl:when>
+								<xsl:when test=".//Property[@Name='Cut Length']/text() != ''">						
+									[Cut Length]
+								</xsl:when>
+								<xsl:when test="($categoryStripped = 'Structural Framing') or ($level1 = 'Structural Framing') or ($level2 = 'Structural Framing')">						
+									[Cut Length]
+								</xsl:when>
+								<xsl:otherwise>
+									[Cut Length]
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>							
+					</xsl:choose>
+				</xsl:when>
+				<xsl:when test="($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor') or ($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor')">
+					<xsl:choose>
+						<xsl:when test="string-length($exteriorSurfaceArea) != 0">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Exterior Surface Area']/text() != ''">						
+									[Exterior Surface Area]
+								</xsl:when>
+								<xsl:when test=".//Property[@Name='Exterior Surface Area']/text() != ''">						
+									[Exterior Surface Area]
+								</xsl:when>
+								<xsl:when test="($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor')">						
+									[Exterior Surface Area]
+								</xsl:when>
+								<xsl:otherwise>
+									[Exterior Surface Area]
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>							
+					</xsl:choose>
+				</xsl:when>				
+			</xsl:choose>
+		</xsl:variable>
+		
+		<xsl:variable name="custom1UOM">
+			<xsl:choose>
+				<xsl:when test="($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs') or ($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs')">
+					<xsl:choose>
+						<xsl:when test="string-length($actualNumberOfRisers) != 0">
+							"no"
+						</xsl:when>
+					</xsl:choose>
+				</xsl:when>
+				<xsl:when test="($categoryStripped = 'Structural Framing') or ($level1 = 'Structural Framing') or ($level2 = 'Structural Framing') or ($categoryStripped = 'Structural Framing') or ($level1 = 'Structural Framing') or ($level2 = 'Structural Framing')">
+					<xsl:choose>
+						<xsl:when test="string-length($cutLength) != 0">"<xsl:value-of select="$buildingUOM"/>"</xsl:when>
+					</xsl:choose>
+				</xsl:when>
+				<xsl:when test="($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor') or ($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor')">
+					<xsl:choose>
+						<xsl:when test="string-length($exteriorSurfaceArea) != 0">"<xsl:value-of select="$buildingUOM"/>2"</xsl:when>
+					</xsl:choose>
+				</xsl:when>	
+			</xsl:choose>
+		</xsl:variable>
+		
+		<!-- custom 2 fields -->
+		<xsl:variable name="custom2Name">
+			<xsl:choose>
+				<xsl:when test="contains($categoryStripped, 'Structural') or contains($level1, 'Structural') or contains($level2, 'Structural') or contains($categoryStripped, 'Floor') or contains($level1, 'Floor') or contains($level2, 'Floor') or contains($categoryStripped, 'Structural') or contains($level1, 'Structural') or contains($level2, 'Structural') or contains($categoryStripped, 'Floor') or contains($level1, 'Floor') or contains($level2, 'Floor')">
+					<xsl:choose>
+						<!-- <xsl:when test="string-length($estimatedReVolume) != 0">"Estimated Reinforcement Volume"</xsl:when> -->
+						<xsl:when test="string-length($estimatedReVolume) != 0">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Estimated Reinforcement Volume']/text() != ''">						
+									"Estimated Reinforcement Volume"
+								</xsl:when>
+								<xsl:when test=".//Property[@Name='Estimated Reinforcement Volume']/text() != ''">						
+									"Estimated Reinforcement Volume"
+								</xsl:when>
+								<xsl:when test="contains($categoryStripped, 'Structural') or contains($level1, 'Structural') or contains($level2, 'Structural') or contains($categoryStripped, 'Floor') or contains($level1, 'Floor') or contains($level2, 'Floor') ">						
+									"Estimated Reinforcement Volume"
+								</xsl:when>
+								<xsl:otherwise>						
+									"Estimated Reinforcement Volume"
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+					</xsl:choose>
+				</xsl:when>	
+
+			</xsl:choose>
+		</xsl:variable>	
+
+		<xsl:variable name="custom2Value">
+			<xsl:choose>
+				<xsl:when test="contains($categoryStripped, 'Structural') or contains($level1, 'Structural') or contains($level2, 'Structural') or contains($categoryStripped, 'Floor') or contains($level1, 'Floor') or contains($level2, 'Floor') or contains($categoryStripped, 'Structural') or contains($level1, 'Structural') or contains($level2, 'Structural') or contains($categoryStripped, 'Floor') or contains($level1, 'Floor') or contains($level2, 'Floor')">
+					<xsl:choose>
+						<xsl:when test="string-length($estimatedReVolume) != 0">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Estimated Reinforcement Volume']/text() != ''">						
+									[Estimated Reinforcement Volume]
+								</xsl:when>
+								<xsl:when test=".//Property[@Name='Estimated Reinforcement Volume']/text() != ''">						
+									[Estimated Reinforcement Volume]
+								</xsl:when>
+								<xsl:when test="contains($categoryStripped, 'Structural') or contains($level1, 'Structural') or contains($level2, 'Structural') or contains($categoryStripped, 'Floor') or contains($level1, 'Floor') or contains($level2, 'Floor')">						
+									[Estimated Reinforcement Volume]
+								</xsl:when>
+								<xsl:otherwise>
+									[Estimated Reinforcement Volume]
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+					</xsl:choose>
+				</xsl:when>	
+					<!-- Not currently using the Riser Height
+					<xsl:when test="($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs')">
+						<xsl:choose>
+							<xsl:when test="string-length($actualRiserHeight) != 0">[Actual Riser Height]</xsl:when>
+						</xsl:choose>
+					</xsl:when>
+				-->		
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="custom2UOM">
+			<xsl:choose>
+				<xsl:when test="contains($categoryStripped, 'Structural') or contains($level1, 'Structural') or contains($level2, 'Structural') or contains($categoryStripped, 'Floor') or contains($level1, 'Floor') or contains($level2, 'Floor') or contains($categoryStripped, 'Structural') or contains($level1, 'Structural') or contains($level2, 'Structural') or contains($categoryStripped, 'Floor') or contains($level1, 'Floor') or contains($level2, 'Floor')">
+					<xsl:choose>
+						<xsl:when test="string-length($estimatedReVolume) != 0">"<xsl:value-of select="$buildingUOM"/>3"</xsl:when>
+					</xsl:choose>
+				</xsl:when>	
+			</xsl:choose>
+		</xsl:variable>	
+
+		<!-- custom 3 fields -->
+		<xsl:variable name="custom3Name">
+			<xsl:choose>
+				<xsl:when test="($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs') or ($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs')">
+					<xsl:choose>
+						<!-- <xsl:when test="string-length($width) != 0">"Total Riser Length"</xsl:when>  -->
+						<xsl:when test="string-length($width) != 0">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Actual Number of Risers']/text() != ''">						
+									"Total Riser Length"
+								</xsl:when>  
+								<xsl:when test=".//Property[@Name='Actual Number of Risers']/text() != ''">						
+									"Total Riser Length"
+								</xsl:when>  
+								<xsl:when test="($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs')">						
+									"Total Riser Length"
+								</xsl:when>  
+								<xsl:otherwise>						
+									"Total Riser Length"
+								</xsl:otherwise>  
+							</xsl:choose>
+						</xsl:when>  
+					</xsl:choose>
+				</xsl:when>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<xsl:variable name="custom3Value">
+			<xsl:choose>
+				<xsl:when test="($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs') or ($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs')">
+					<xsl:choose>
+						<xsl:when test="(string-length($width) != 0) and ($buildingUOM = 'm') and (not(contains($actualNumberOfRisers, 'no'))) or (string-length($width) != 0) and ($buildingUOM = 'm') and (not(contains($actualNumberOfRisers, 'no')))">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Actual Number of Risers']/text() != ''">						
+									<xsl:choose>
+										<xsl:when test=".//Property[@Name='Width']/text() != ''">						
+											[Width]*[Actual Number of Risers]*1000
+										</xsl:when>
+										<xsl:otherwise>
+											[Width]*[Actual Number of Risers]*1000
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:choose>
+										<xsl:when test=".//Property[@Name='Width']/text() != ''">						
+											[Width]*[Actual Number of Risers]*1000
+										</xsl:when>
+										<xsl:otherwise>
+											[Width]*[Actual Number of Risers]*1000
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+							<!-- We multiply by 1000 because when coming from Revit, the default UOM for 
+							length objects needs to be mm, and therefore if the building is m and the actual number of risers 
+							does not have the unit (no) specified on the schedule, the the count of risers will be treated as 
+							mm and converted to m by dividing by 1000. -->
+					</xsl:choose>
+				</xsl:when>	
+			</xsl:choose>
+		</xsl:variable>
+		
+		<xsl:variable name="custom3UOM">
+			<xsl:choose>
+				<xsl:when test="($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs') or ($categoryStripped = 'Stairs') or ($level1 = 'Stairs') or ($level2 = 'Stairs')">
+					<xsl:choose>
+						<xsl:when test="string-length($width) != 0">"<xsl:value-of select="$buildingUOM"/>"</xsl:when>
+					</xsl:choose>
+				</xsl:when>
+			</xsl:choose>
+		</xsl:variable>
+
+	
+		<!-- Calculate area -->
+		<!-- <xsl:variable name="area" select=".//Property[@Name = 'Area']/text()"/> -->
+		<xsl:variable name="area">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Area']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Area']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Area']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<!-- <xsl:variable name="projectedArea" select=".//Property[@Name = 'Projected Area']/text()"/> -->
+		<xsl:variable name="projectedArea">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Projected Area']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Projected Area']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Projected Area']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<!-- <xsl:variable name="surfaceArea" select=".//Property[@Name = 'Surface Area']/text()"/> -->
+		<xsl:variable name="surfaceArea">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Surface Area']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Surface Area']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Surface Area']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<!-- <xsl:variable name="grossSurfaceArea" select=".//Property[@Name = 'Gross Surface Area']/text()"/> -->
+		<xsl:variable name="grossSurfaceArea">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Gross Surface Area']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Gross Surface Area']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Gross Surface Area']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<!-- <xsl:variable name="grossFloorArea" select=".//Property[@Name = 'Gross Floor Area']/text()"/> -->
+		<xsl:variable name="grossFloorArea">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Gross Floor Area']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Gross Floor Area']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Gross Floor Area']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<xsl:variable name="areaStripped">
+			<xsl:choose>
+				<xsl:when test="string-length($area) = 0">
+					<xsl:value-of select="number('0')"/>
+				</xsl:when>
+				<xsl:when test="string-length(substring-before($area, ' ')) != 0">
+					<xsl:value-of select="substring-before($area, ' ')"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$area"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="projectedAreaStripped">
+			<xsl:choose>
+				<xsl:when test="string-length($projectedArea) = 0">
+					<xsl:value-of select="number('0')"/>
+				</xsl:when>
+				<xsl:when test="string-length(substring-before($projectedArea, ' ')) != 0">
+					<xsl:value-of select="substring-before($projectedArea, ' ')"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$projectedArea"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="surfaceAreaStripped">
+			<xsl:choose>
+				<xsl:when test="string-length($surfaceArea) = 0">
+					<xsl:value-of select="number('0')"/>
+				</xsl:when>
+				<xsl:when test="string-length(substring-before($surfaceArea, ' ')) != 0">
+					<xsl:value-of select="substring-before($surfaceArea, ' ')"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$surfaceArea"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="grossSurfaceAreaStripped">
+			<xsl:choose>
+				<xsl:when test="string-length($grossSurfaceArea) = 0">
+					<xsl:value-of select="number('0')"/>
+				</xsl:when>
+				<xsl:when test="string-length(substring-before($grossSurfaceArea, ' ')) != 0">
+					<xsl:value-of select="substring-before($grossSurfaceArea, ' ')"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$grossSurfaceArea"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="grossFloorAreaStripped">
+			<xsl:choose>
+				<xsl:when test="string-length($grossFloorArea) = 0">
+					<xsl:value-of select="number('0')"/>
+				</xsl:when>
+				<xsl:when test="string-length(substring-before($grossFloorArea, ' ')) != 0">
+					<xsl:value-of select="substring-before($grossFloorArea, ' ')"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$grossFloorArea"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+	
+		<xsl:variable name="areaNumber" select="number($areaStripped)"/>
+		<xsl:variable name="projectedAreaNumber" select="number($projectedAreaStripped)"/>
+		<xsl:variable name="surfaceAreaNumber" select="number($surfaceAreaStripped)"/>
+		<xsl:variable name="grossFloorAreaNumber" select="number($grossFloorAreaStripped)"/>
+		<xsl:variable name="grossSurfaceAreaNumber" select="number($grossSurfaceAreaStripped)"/>
+		
+		<!-- Calculate wall area -->
+		<xsl:variable name="wallArea">
+			<!-- <xsl:if  test="string-length(.//Property[@Name = 'Wall Area']/text()) != 0">[Wall Area]</xsl:if> -->
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Wall Area']/text() != ''">
+					[Wall Area]
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:if test="string-length(.//Property[@Name = 'Wall Area']/text()) != 0">[Wall Area]</xsl:if>
+				</xsl:otherwise>
+			</xsl:choose>			
+		</xsl:variable>
+		
+		<!-- Calculate volume -->
+		<!-- <xsl:variable name="volume" select=".//Property[@Name = 'Volume']/text()"/> -->
+		<xsl:variable name="volume">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Volume']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Volume']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Volume']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<!-- <xsl:variable name="grossVolume" select=".//Property[@Name = 'Gross Volume']/text()"/> -->
+		<xsl:variable name="grossVolume">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Gross Volume']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Gross Volume']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Gross Volume']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<!-- <xsl:variable name="cutFillCut" select=".//Property[@Name = 'Cut']/text()"/> -->
+		<xsl:variable name="cutFillCut">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Cut']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Cut']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Cut']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<!-- <xsl:variable name="cutFillFill" select=".//Property[@Name = 'Fill']/text()"/> -->
+		<xsl:variable name="cutFillFill">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Fill']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Fill']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Fill']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<!-- <xsl:variable name="cutFillNet" select=".//Property[@Name = 'Net cut/fill']/text()"/> -->
+		<xsl:variable name="cutFillNet">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Net cut/fill']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Net cut/fill']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Net cut/fill']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<xsl:variable name="volumeStripped">
+			<xsl:choose>
+				<xsl:when test="string-length($volume) = 0">
+					<xsl:value-of select="number('0')"/>
+				</xsl:when>
+				<xsl:when test="string-length(substring-before($volume, ' ')) != 0">
+					<xsl:value-of select="substring-before($volume, ' ')"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$volume"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="grossVolumeStripped">
+			<xsl:choose>
+				<xsl:when test="string-length($grossVolume) = 0">
+					<xsl:value-of select="number('0')"/>
+				</xsl:when>
+				<xsl:when test="string-length(substring-before($grossVolume, ' ')) != 0">
+					<xsl:value-of select="substring-before($grossVolume, ' ')"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$grossVolume"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="cutFillCutStripped">
+			<xsl:choose>
+				<xsl:when test="string-length($cutFillCut) = 0">
+					<xsl:value-of select="number('0')"/>
+				</xsl:when>
+				<xsl:when test="string-length(substring-before($cutFillCut, ' ')) != 0">
+					<xsl:value-of select="substring-before($cutFillCut, ' ')"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$cutFillCut"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="cutFillFillStripped">
+			<xsl:choose>
+				<xsl:when test="string-length($cutFillFill) = 0">
+					<xsl:value-of select="number('0')"/>
+				</xsl:when>
+				<xsl:when test="string-length(substring-before($cutFillFill, ' ')) != 0">
+					<xsl:value-of select="substring-before($cutFillFill, ' ')"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$cutFillFill"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="cutFillNetStripped">
+			<xsl:choose>
+				<xsl:when test="string-length($cutFillNet) = 0">
+					<xsl:value-of select="number('0')"/>
+				</xsl:when>
+				<xsl:when test="string-length(substring-before($cutFillNet, ' ')) != 0">
+					<xsl:value-of select="substring-before($cutFillNet, ' ')"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$cutFillNet"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>			
+		
+		<xsl:variable name="volumeNumber" select="number($volumeStripped)"/>
+		<xsl:variable name="grossVolumeNumber" select="number($grossVolumeStripped)"/>
+		<xsl:variable name="cutFillCutNumber" select="number($cutFillCutStripped)"/>
+		<xsl:variable name="cutFillFillNumber" select="number($cutFillFillStripped)"/>
+		<xsl:variable name="cutFillNetNumber" select="number($cutFillNetStripped)"/>
+
+		<!-- Calculate length -->
+		<!-- Lengths check for other types of values so they need to come last -->
+		<!-- <xsl:variable name="perimeter" select =".//Property[@Name = 'Perimeter']/text()"/> -->
+		<xsl:variable name="perimeter">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Perimeter']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Perimeter']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Perimeter']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<!-- <xsl:variable name="totalBarLength" select=".//Property[@Name = 'Total Bar Length']/text()"/> -->
+		<xsl:variable name="totalBarLength">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Total Bar Length']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Total Bar Length']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Total Bar Length']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<!-- <xsl:variable name="topOffset" select=".//Property[@Name = 'Top Offset']/text()"/> -->
+		<xsl:variable name="topOffset">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Top Offset']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Top Offset']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Top Offset']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<!-- <xsl:variable name="baseOffset" select=".//Property[@Name = 'Base Offset']/text()"/> -->
+		<xsl:variable name="baseOffset">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Base Offset']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Base Offset']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Base Offset']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<!-- <xsl:variable name="topLevel" select=".//Propery[@Name = 'Top Level']/text()"/> -->
+		<xsl:variable name="topLevel">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Top Level']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Top Level']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Top Level']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<!-- <xsl:variable name="length" select=".//Property[@Name = 'Length']/text()"/> -->
+		<xsl:variable name="length">
+			<xsl:choose>
+				<xsl:when test=".//Property[@Name='Length']/text() != ''">
+					<xsl:value-of select=".//Property[@Name='Length']/text()"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select=".//Property[@Name='Length']/text()"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<xsl:variable name="lengthValue">
+			<xsl:choose>
+				<!-- <xsl:when test="($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor')">[Floor Perimeter]</xsl:when>  -->
+				<xsl:when test="($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor') or ($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor')">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='Floor Perimeter']/text() != ''">
+							[Floor Perimeter]
+						</xsl:when>
+						<xsl:when test=".//Property[@Name='Floor Perimeter']/text() != ''">
+							[Floor Perimeter]
+						</xsl:when>
+						<xsl:when test="($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor')">
+							[Floor Perimeter]
+						</xsl:when>
+						<xsl:otherwise>
+							[Floor Perimeter]
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when> 
+				<!-- <xsl:when test="($categoryStripped = 'Windows') or ($level1 = 'Windows') or ($level2 = 'Windows')">[Width]</xsl:when> -->
+				<xsl:when test="($categoryStripped = 'Windows') or ($level1 = 'Windows') or ($level2 = 'Windows') or ($categoryStripped = 'Windows') or ($level1 = 'Windows') or ($level2 = 'Windows')">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='Width']/text() != ''">
+							[Width]
+						</xsl:when>
+						<xsl:when test=".//Property[@Name='Width']/text() != ''">
+							[Width]
+						</xsl:when>
+						<xsl:when test="($categoryStripped = 'Windows') or ($level1 = 'Windows') or ($level2 = 'Windows')">
+							[Width]
+						</xsl:when>
+						<xsl:otherwise>
+							[Width]
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>
+				<!-- <xsl:when test="($categoryStripped = 'Doors') or ($level1 = 'Doors') or ($level2 = 'Doors')">[Width]</xsl:when> -->
+				<xsl:when test="($categoryStripped = 'Doors') or ($level1 = 'Doors') or ($level2 = 'Doors') or ($categoryStripped = 'Doors') or ($level1 = 'Doors') or ($level2 = 'Doors')">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='Width']/text() != ''">
+							[Width]
+						</xsl:when>
+						<xsl:when test=".//Property[@Name='Width']/text() != ''">
+							[Width]
+						</xsl:when>
+						<xsl:when test="($categoryStripped = 'Doors') or ($level1 = 'Doors') or ($level2 = 'Doors')">
+							[Width]
+						</xsl:when>
+						<xsl:otherwise>
+							[Width]
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>
+				<!-- <xsl:when test="($categoryStripped = 'Curtain Panels') or ($level1 = 'Curtain Panels') or ($level2 = 'Curtain Panels')">[Width]</xsl:when> -->
+				<xsl:when test="($categoryStripped = 'Curtain Panels') or ($level1 = 'Curtain Panels') or ($level2 = 'Curtain Panels') or ($categoryStripped = 'Curtain Panels') or ($level1 = 'Curtain Panels') or ($level2 = 'Curtain Panels')">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='Width']/text() != ''">
+							[Width]
+						</xsl:when>
+						<xsl:when test=".//Property[@Name='Width']/text() != ''">
+							[Width]
+						</xsl:when>
+						<xsl:when test="($categoryStripped = 'Curtain Panels') or ($level1 = 'Curtain Panels') or ($level2 = 'Curtain Panels')">
+							[Width]
+						</xsl:when>
+						<xsl:otherwise>
+							[Width]
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>
+				<xsl:when test="string-length($perimeter) > 0">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='Perimeter']/text() != ''">						
+							[Perimeter]
+						</xsl:when>
+						<xsl:otherwise>
+							[Perimeter]
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>
+				<xsl:when test="string-length($totalBarLength) > 0">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='Total Bar Length']/text() != ''">						
+							[Total Bar Length]
+						</xsl:when>
+						<xsl:otherwise>
+							[Total Bar Length]
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>
+				<xsl:when test="string-length($length) > 0">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='Length']/text() != ''">						
+							[Length]
+						</xsl:when>
+						<xsl:otherwise>
+							[Length]
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>
+			</xsl:choose>
+		</xsl:variable>
+
+		<!-- Parts (start) -->
+		<xsl:variable name="partsAddOnFront"><xsl:value-of select="$space"/>(Part:<xsl:value-of select="$space"/></xsl:variable>	
+
+		<xsl:variable name="partsAddOn">
+			<xsl:value-of select="$partsAddOnFront"/>
+			<xsl:choose>
+				<xsl:when test="string-length($materialFromIdentityData) != 0">
+					<xsl:value-of select="$materialFromIdentityData"/>
+				</xsl:when>
+				<xsl:when test="string-length($layerFunction) != 0">
+					<xsl:value-of select="$layerFunction"/>
+				</xsl:when>
+			</xsl:choose>
+			<xsl:if test="string-length($thickness) != 0">
+				<xsl:value-of select="$spacer"/>
+				<xsl:value-of select="$thickness"/>
+			</xsl:if>	
+			<xsl:value-of select="$closeBracket"/>
+		</xsl:variable>
+		<!-- Parts (end) -->
+	
+		<!-- Calculate the Dimension Group Name -->
+		<xsl:variable name="dimGroupValue">
+			<xsl:choose>
+				<xsl:when test="($familyName != $categoryStripped) and (not(contains($typeName, $familyName))) and (not(contains($familyName, $typeName)))">
+					<xsl:value-of select="$familyName"/>
+					<xsl:value-of select="$space"/>
+					<xsl:value-of select="$typeName"/>
+				</xsl:when>
+				<xsl:when test="(string-length($typeName) != 0) and ((not(contains($familyName, $typeName))) or ($familyName = $typeName) or ($familyName = $categoryStripped))">
+					<xsl:value-of select="$typeName"/>
+				</xsl:when>
+				<xsl:when test="($familyName != $categoryStripped) and (not(contains($typeName, $familyName)))">
+					<xsl:value-of select="$familyName"/>
+				</xsl:when>
+				<!-- Parts (start) -->
+				<xsl:when test="($originalFamilyName != $categoryStripped) and (not(contains($originalTypeName, $originalFamilyName))) and (not(contains($originalFamilyName, $originalTypeName)))">
+					<xsl:value-of select="$originalFamilyName"/>
+					<xsl:value-of select="$space"/>
+					<xsl:value-of select="$originalTypeName"/>
+					<xsl:value-of select="$partsAddOn"/>
+				</xsl:when>
+				<xsl:when test="(string-length($originalTypeName) != 0) and ((not(contains($originalFamilyName, $originalTypeName))) or ($familyName = $originalTypeName) or ($originalFamilyName = $categoryStripped))">
+					<xsl:value-of select="$originalTypeName"/>
+					<xsl:value-of select="$partsAddOn"/>
+				</xsl:when>
+				<xsl:when test="($originalFamilyName != $categoryStripped) and (not(contains($originalTypeName, $originalFamilyName)))">
+					<xsl:value-of select="$originalFamilyName"/>
+					<xsl:value-of select="$partsAddOn"/>
+				</xsl:when>
+				<xsl:when test="(($level1 = 'Parts') or ($level1 = 'Part') or ($level1 = 'Parts') or ($level1 = 'Part')) and (string-length($typeName) = 0) and (string-length($familyName) = 0) and (string-length($originalTypeName) = 0) and (string-length($originalFamilyName) = 0) and (string-length($originalFamilyAndType) != 0)">
+					<xsl:value-of select="$originalFamilyAndType"/>
+					<xsl:value-of select="$partsAddOn"/>
+				</xsl:when><!-- Parts (end) -->
+				<xsl:when test="string-length($categoryOfAssemblyCode) != 0">
+					<xsl:value-of select="$categoryOfAssemblyCode"/>
+				</xsl:when>				        
+				<xsl:when test="string-length($Name) != 0">
+					<xsl:value-of select="$Name"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$categoryChildStripped"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="areaValue">
+			<xsl:choose>
+				<!-- This line below can only be used if the units have been set in the schedule or on the property value for height and width.
+				     More often than not it is not the case so the figures would be wrong.
+				     <xsl:when test="($categoryStripped = 'Curtain Panels') and (string-length($width) != 0) and (string-length($height) != 0)">[Width]*[Height]</xsl:when>	-->	
+
+				     <!-- <xsl:when test="($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor')">[Floor Area]</xsl:when>	 -->
+				<xsl:when test="($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor') or ($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor')">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='Floor Area']/text() != ''">
+							[Floor Area]
+						</xsl:when>
+						<xsl:when test=".//Property[@Name='Floor Area']/text() != ''">
+							[Floor Area]
+						</xsl:when>
+						<xsl:when test="($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor')">
+							[Floor Area]
+						</xsl:when>
+						<xsl:otherwise>
+							[Floor Area]
+						</xsl:otherwise>
+					</xsl:choose>
+			     </xsl:when>	
+
+				<xsl:when test="string-length($area) != 0">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='Area']/text() != ''">						
+							[Area]
+						</xsl:when>
+						<xsl:otherwise>
+							[Area]
+						</xsl:otherwise>
+					</xsl:choose>
+			     </xsl:when>
+
+				<xsl:when test="string-length($surfaceArea) != 0">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='Surface Area']/text() != ''">						
+							[Surface Area]
+						</xsl:when>
+						<xsl:otherwise>
+							[Surface Area]
+						</xsl:otherwise>
+					</xsl:choose>
+			     </xsl:when>
+
+				<xsl:when test="string-length($projectedArea) != 0">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='Projected Area']/text() != ''">						
+							[Projected Area]
+						</xsl:when>
+						<xsl:otherwise>
+							[Projected Area]
+						</xsl:otherwise>
+					</xsl:choose>
+			     </xsl:when>
+
+			     <xsl:when test="string-length($grossSurfaceArea) != 0">
+					<xsl:choose>
+						<xsl:when test=".//Property[@Name='Gross Surface Area']/text() != ''">						
+							[Gross Surface Area]
+						</xsl:when>
+						<xsl:otherwise>
+							[Gross Surface Area]
+						</xsl:otherwise>
+					</xsl:choose>
+			     </xsl:when>
+		 	</xsl:choose>
+		</xsl:variable>
+
+		<xsl:choose>
+			<xsl:when test="(string-length($surfaceArea) != 0) or (string-length($projectedArea) != 0)">
+				<xsl:call-template name="doOutput">
+					<xsl:with-param name="area" select="$areaValue"/>
+					<xsl:with-param name="count" select="$count"/>
+					<xsl:with-param name="dimensionGroupFolder" select="$categoryStripped"/>
+					<xsl:with-param name="dimensionGroupName">
+						<xsl:value-of select="$dimGroupValue"/>
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Surface Area']/text() != ''">
+									<xsl:choose>
+										<xsl:when test="string-length($surfaceArea) != 0"><xsl:value-of select="$space"/>Surface Area</xsl:when>
+									</xsl:choose>
+								</xsl:when>
+								<xsl:when test=".//Property[@Name='Projected Area']/text() != ''">
+									<xsl:choose>
+										<xsl:when test="string-length($projectedArea) != 0"><xsl:value-of select="$space"/>Projected Area</xsl:when>
+									</xsl:choose>
+								</xsl:when>
+								<xsl:when test=".//Property[@Name='Surface Area']/text() != ''">
+									<xsl:choose>
+										<xsl:when test="string-length($surfaceArea) != 0"><xsl:value-of select="$space"/>Surface Area</xsl:when>
+									</xsl:choose>
+								</xsl:when>
+								<xsl:when test=".//Property[@Name='Projected Area']/text() != ''">
+									<xsl:choose>
+										<xsl:when test="string-length($projectedArea) != 0"><xsl:value-of select="$space"/>Projected Area</xsl:when>
+									</xsl:choose>
+								</xsl:when>
+							</xsl:choose>
+					</xsl:with-param>
+					<xsl:with-param name="dimensionName" select="$dimensionNameValue"/>
+					<xsl:with-param name="length" select="$lengthValue"/>
+					<xsl:with-param name="height" select="$height"/>
+					<xsl:with-param name="volume"/>					
+					<xsl:with-param name="wallArea" select="$wallArea"/>
+					<xsl:with-param name="zone" select="$zone"/>
+					<xsl:with-param name="zc1" select="$zone"/>
+					<xsl:with-param name="zc2" select="$Division_StartPhase"/>
+					<xsl:with-param name="Division_StartPhase" select="$Division_StartPhase"/>
+					<xsl:with-param name="Division_EndPhase" select="$Division_EndPhase"/>
+					<xsl:with-param name="Division_Location" select="$Division_Location"/>
+					<xsl:with-param name="Division_Function" select="$Division_Function"/>
+					<xsl:with-param name="Division_Other" select="$Division_Other"/>
+					<xsl:with-param name="weight" select="$weightValue"/>
+					<xsl:with-param name="weightUOM" select="$weightuom"/>
+					<xsl:with-param name="custom1Name" select="$custom1Name"/>
+					<xsl:with-param name="custom1Value" select="$custom1Value"/>
+					<xsl:with-param name="custom1UOM" select="$custom1UOM"/>
+					<xsl:with-param name="custom2Name" select="$custom2Name"/>
+					<xsl:with-param name="custom2Value" select="$custom2Value"/>
+					<xsl:with-param name="custom2UOM" select="$custom2UOM"/>
+					<xsl:with-param name="custom3Name" select="$custom3Name"/>
+					<xsl:with-param name="custom3Value" select="$custom3Value"/>
+					<xsl:with-param name="custom3UOM" select="$custom3UOM"/>
+					<xsl:with-param name="level1" select="$level1"/>
+					<xsl:with-param name="level2" select="$level2"/>					
+				</xsl:call-template>
+				<xsl:if test="(string-length($cutFillNet) != 0) and ($cutFillNetNumber != 0)">
+					<xsl:call-template name="doOutput">
+						<xsl:with-param name="area"/>
+						<xsl:with-param name="count" select="$count"/>
+						<xsl:with-param name="dimensionGroupFolder" select="$categoryStripped"/>
+						<xsl:with-param name="dimensionGroupName">
+							<xsl:value-of select="$dimGroupValue"/>
+							<xsl:value-of select="$space"/>Cut/Fill</xsl:with-param>
+						<xsl:with-param name="dimensionName" select="$dimensionNameValue"/>
+						<xsl:with-param name="length" select="$lengthValue"/>
+						<xsl:with-param name="height" select="$height"/>
+						<xsl:with-param name="volume">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Net cut/fill']/text() != ''">						
+									[Net cut/fill]
+								</xsl:when>
+								<xsl:otherwise>
+									[Net cut/fill]
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:with-param>
+						<xsl:with-param name="wallArea" select="$wallArea"/>
+						<xsl:with-param name="zone" select="$zone"/>
+  					    <xsl:with-param name="zc1" select="$zone"/>
+					    <xsl:with-param name="zc2" select="$Division_StartPhase"/>
+						<xsl:with-param name="Division_StartPhase" select="$Division_StartPhase"/>
+						<xsl:with-param name="Division_EndPhase" select="$Division_EndPhase"/>
+						<xsl:with-param name="Division_Location" select="$Division_Location"/>
+						<xsl:with-param name="Division_Function" select="$Division_Function"/>
+						<xsl:with-param name="Division_Other" select="$Division_Other"/>
+						<xsl:with-param name="weight" select="$weightValue"/>
+						<xsl:with-param name="weightUOM" select="$weightuom"/>
+						<!-- <xsl:with-param name="custom1Name">"Cut"</xsl:with-param> -->
+						<xsl:with-param name="custom1Name">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Cut']/text() != ''">						
+									"Cut"
+								</xsl:when>
+								<xsl:otherwise>
+									"Cut"
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:with-param>
+						<xsl:with-param name="custom1Value">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Cut']/text() != ''">						
+									[Cut]
+								</xsl:when>
+								<xsl:otherwise>
+                  					<xsl:if test="string-length(.//Property[@Name = 'Cut']/text()) != 0">[Cut]</xsl:if>  
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:with-param>
+						<xsl:with-param name="custom1UOM">"m3"</xsl:with-param>
+						<!-- <xsl:with-param name="custom2Name">"Fill"</xsl:with-param> -->
+						<xsl:with-param name="custom2Name">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Cut']/text() != ''">						
+									"Fill"
+								</xsl:when>
+								<xsl:otherwise>
+									"Fill"
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:with-param>
+						<xsl:with-param name="custom2Value">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Fill']/text() != ''">						
+									[Fill]
+								</xsl:when>
+								<xsl:otherwise>
+                  					<xsl:if test="string-length(.//Property[@Name = 'Fill']/text()) != 0">[Fill]</xsl:if>  
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:with-param>
+						<xsl:with-param name="custom2UOM">"m3"</xsl:with-param>
+						<xsl:with-param name="custom3Name"></xsl:with-param>
+						<xsl:with-param name="custom3Value"></xsl:with-param>
+						<xsl:with-param name="custom3UOM"></xsl:with-param>
+						<xsl:with-param name="level1" select="$level1"/>
+						<xsl:with-param name="level2" select="$level2"/>						
+					</xsl:call-template>
+				</xsl:if>
+			</xsl:when>
+			<xsl:when test="(string-length($grossSurfaceArea) != 0) and ($grossSurfaceAreaNumber != 0)">
+				<xsl:call-template name="doOutput">
+					<xsl:with-param name="area">
+						<xsl:choose>
+							<xsl:when test=".//Property[@Name='Gross Surface Area']/text() != ''">						
+								[Gross Surface Area]
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:if test="string-length(.//Property[@Name = 'Gross Surface Area']/text()) != 0">[Gross Surface Area]</xsl:if>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:with-param>
+					<xsl:with-param name="count" select="$count"/>
+					<xsl:with-param name="dimensionGroupFolder" select="$categoryStripped"/>
+					<xsl:with-param name="dimensionGroupName">
+						<xsl:value-of select="$dimGroupValue"/>
+						<xsl:value-of select="$space"/>Gross Surface Area</xsl:with-param>
+					<xsl:with-param name="dimensionName" select="$dimensionNameValue"/>
+					<xsl:with-param name="length" select="$lengthValue"/>
+					<xsl:with-param name="height" select="$height"/>
+					<xsl:with-param name="volume">
+						<xsl:choose>
+							<xsl:when test=".//Property[@Name='Gross Volume']/text() != ''">						
+								[Gross Volume]
+							</xsl:when>
+							<xsl:otherwise>
+                				<xsl:if test="string-length(.//Property[@Name = 'Gross Volume']/text()) != 0">[Gross Volume]</xsl:if>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:with-param>
+					<xsl:with-param name="wallArea" select="$wallArea"/>
+					<xsl:with-param name="zone" select="$zone"/>
+					<xsl:with-param name="zc1" select="$zone"/>
+					<xsl:with-param name="zc2" select="$Division_StartPhase"/>
+					<xsl:with-param name="Division_StartPhase" select="$Division_StartPhase"/>
+					<xsl:with-param name="Division_EndPhase" select="$Division_EndPhase"/>
+					<xsl:with-param name="Division_Location" select="$Division_Location"/>
+					<xsl:with-param name="Division_Function" select="$Division_Function"/>
+					<xsl:with-param name="Division_Other" select="$Division_Other"/>
+					<xsl:with-param name="weight" select="$weightValue"/>
+					<xsl:with-param name="weightUOM" select="$weightuom"/>
+					<xsl:with-param name="custom1Name">
+						<xsl:choose>
+							<!-- <xsl:when test="(($categoryStripped = 'Mass') or ($level1 = 'Mass') or ($level2 = 'Mass')) and (string-length($grossFloorArea) != 0) and ($grossFloorAreaNumber != 0)">"Gross Floor Area"</xsl:when> -->
+							<xsl:when test="(($categoryStripped = 'Mass') or ($level1 = 'Mass') or ($level2 = 'Mass') or ($categoryStripped = 'Mass') or ($level1 = 'Mass') or ($level2 = 'Mass')) and (string-length($grossFloorArea) != 0) and ($grossFloorAreaNumber != 0)">
+								<xsl:choose>
+									<xsl:when test=".//Property[@Name='Gross Floor Area']/text() != ''">
+										"Gross Floor Area"
+									</xsl:when>
+									<xsl:when test=".//Property[@Name='Gross Floor Area']/text() != ''">
+										"Gross Floor Area"
+									</xsl:when>
+									<xsl:when test="($categoryStripped = 'Mass') or ($level1 = 'Mass') or ($level2 = 'Mass')">
+										"Gross Floor Area"
+									</xsl:when>
+									<xsl:otherwise>
+										"Gross Floor Area"
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$custom1Name"/>
+							</xsl:otherwise>	
+						</xsl:choose>
+					</xsl:with-param>					
+					<xsl:with-param name="custom1Value">
+						<xsl:choose>
+							<xsl:when test="(($categoryStripped = 'Mass') or ($level1 = 'Mass') or ($level2 = 'Mass') or ($categoryStripped = 'Mass') or ($level1 = 'Mass') or ($level2 = 'Mass')) and (string-length($grossFloorArea) != 0) and ($grossFloorAreaNumber != 0)">
+								<xsl:choose>
+									<xsl:when test=".//Property[@Name='Gross Floor Area']/text() != ''">
+										[Gross Floor Area]
+									</xsl:when>
+									<xsl:when test=".//Property[@Name='Gross Floor Area']/text() != ''">
+										[Gross Floor Area]
+									</xsl:when>
+									<xsl:when test="($categoryStripped = 'Mass') or ($level1 = 'Mass') or ($level2 = 'Mass')">
+										[Gross Floor Area]
+									</xsl:when>
+									<xsl:otherwise>
+										[Gross Floor Area]
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$custom1Value"/>
+							</xsl:otherwise>	
+						</xsl:choose>
+					</xsl:with-param>
+					<xsl:with-param name="custom1UOM">
+						<xsl:choose>
+							<xsl:when test="(($categoryStripped = 'Mass') or ($level1 = 'Mass') or ($level2 = 'Mass') or ($categoryStripped = 'Mass') or ($level1 = 'Mass') or ($level2 = 'Mass')) and (string-length($grossFloorArea) != 0) and ($grossFloorAreaNumber != 0)">
+								"<xsl:value-of select="$buildingUOM"/>2"
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$custom1UOM"/>
+							</xsl:otherwise>	
+						</xsl:choose>
+					</xsl:with-param>
+					<xsl:with-param name="custom2Name" select="$custom2Name"/>
+					<xsl:with-param name="custom2Value" select="$custom2Value"/>
+					<xsl:with-param name="custom2UOM" select="$custom2UOM"/>
+					<xsl:with-param name="custom3Name" select="$custom3Name"/>
+					<xsl:with-param name="custom3Value" select="$custom3Value"/>
+					<xsl:with-param name="custom3UOM" select="$custom3UOM"/>
+					<xsl:with-param name="level1" select="$level1"/>
+					<xsl:with-param name="level2" select="$level2"/>					
+				</xsl:call-template>
+			</xsl:when>			
+			<xsl:otherwise>
+				<xsl:variable name="volumeValue">
+					<xsl:choose>
+						<xsl:when test="($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor') or ($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor')">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Floor Volume']/text() != ''">
+									[Floor Volume]
+								</xsl:when>
+								<xsl:when test=".//Property[@Name='Floor Volume']/text() != ''">
+									[Floor Volume]
+								</xsl:when>
+								<xsl:when test="($categoryStripped = 'Mass Floor') or ($level1 = 'Mass Floor') or ($level2 = 'Mass Floor')">
+									[Floor Volume]
+								</xsl:when>
+								<xsl:otherwise>
+									[Floor Volume]
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>	
+						<xsl:when test="string-length($volume) != 0">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Volume']/text() != ''">						
+									[Volume]
+								</xsl:when>
+								<xsl:otherwise>
+									[Volume]
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+						<xsl:when test="string-length($grossVolume) != 0">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Gross Volume']/text() != ''">						
+									[Gross Volume]
+								</xsl:when>
+								<xsl:otherwise>
+									[Gross Volume]
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>			
+						<xsl:when test="string-length($cutFillNet) != 0">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Net cut/fill']/text() != ''">						
+									[Net cut/fill]
+								</xsl:when>
+								<xsl:otherwise>
+									[Net cut/fill]
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+						<xsl:when test="string-length($cutFillFill) != 0">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Fill']/text() != ''">						
+									[Fill]
+								</xsl:when>
+								<xsl:otherwise>
+									[Fill]
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+						<xsl:when test="string-length($cutFillCut) != 0">
+							<xsl:choose>
+								<xsl:when test=".//Property[@Name='Cut']/text() != ''">						
+									[Cut]
+								</xsl:when>
+								<xsl:otherwise>
+									[Cut]
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+					</xsl:choose>
+				</xsl:variable>
+				<xsl:call-template name="doOutput">
+					<xsl:with-param name="area" select="$areaValue"/>
+					<xsl:with-param name="count" select="$count"/>
+					<xsl:with-param name="dimensionGroupFolder" select="$categoryStripped"/>
+					<xsl:with-param name="dimensionGroupName">
+						<xsl:value-of select="$dimGroupValue"/>
+						<xsl:choose>
+							<xsl:when test="string-length($size) != 0">
+								<xsl:value-of select="$space"/>
+								<xsl:value-of select="$size"/>
+							</xsl:when>
+							<xsl:when test="string-length($concreteStrength) != 0">
+								<xsl:value-of select="$space"/>
+								<xsl:value-of select="$concreteStrength"/>
+							</xsl:when>
+							<xsl:when test="string-length($diameter) != 0">
+								<xsl:value-of select="$space"/>
+								<xsl:value-of select="$diameter"/>
+							</xsl:when>
+							<xsl:when test="(($categoryStripped = 'Fascias') or ($level1 = 'Fascias') or ($level2 = 'Fascias') or ($categoryStripped = 'Fascias') or ($level1 = 'Fascias') or ($level2 = 'Fascias')) and ($profileFromConstruction != $dimGroupValue) and (not(contains($dimGroupValue, $profileFromConstruction)))">
+								<xsl:value-of select="$space"/>
+								<xsl:value-of select="$profileFromConstruction"/>
+							</xsl:when>
+							<xsl:when test="(($categoryStripped = 'Gutters') or ($level1 = 'Gutters') or ($level2 = 'Gutters') or ($categoryStripped = 'Gutters') or ($level1 = 'Gutters') or ($level2 = 'Gutters')) and ($profileFromConstruction != $dimGroupValue) and (not(contains($dimGroupValue, $profileFromConstruction)))">
+								<xsl:value-of select="$space"/>
+								<xsl:value-of select="$profileFromConstruction"/>
+							</xsl:when>
+						</xsl:choose>
+					</xsl:with-param>
+					<xsl:with-param name="dimensionName" select="$dimensionNameValue"/>
+					<xsl:with-param name="length" select="$lengthValue"/>
+					<xsl:with-param name="height" select="$height"/>
+					<xsl:with-param name="volume" select="$volumeValue"/>
+					<xsl:with-param name="wallArea" select="$wallArea"/>
+					<xsl:with-param name="zone" select="$zone"/>
+				    <xsl:with-param name="zc1" select="$zone"/>
+				    <xsl:with-param name="zc2" select="$Division_StartPhase"/>													<xsl:with-param name="Division_StartPhase" select="$Division_StartPhase"/>
+					<xsl:with-param name="Division_EndPhase" select="$Division_EndPhase"/>
+					<xsl:with-param name="Division_Location" select="$Division_Location"/>
+					<xsl:with-param name="Division_Function" select="$Division_Function"/>
+					<xsl:with-param name="Division_Other" select="$Division_Other"/>
+					<xsl:with-param name="weight" select="$weightValue"/>
+					<xsl:with-param name="weightUOM" select="$weightuom"/>
+					<xsl:with-param name="custom1Name" select="$custom1Name"/>
+					<xsl:with-param name="custom1Value" select="$custom1Value"/>
+					<xsl:with-param name="custom1UOM" select="$custom1UOM"/>
+					<xsl:with-param name="custom2Name" select="$custom2Name"/>
+					<xsl:with-param name="custom2Value" select="$custom2Value"/>
+					<xsl:with-param name="custom2UOM" select="$custom2UOM"/>
+					<xsl:with-param name="custom3Name" select="$custom3Name"/>
+					<xsl:with-param name="custom3Value" select="$custom3Value"/>
+					<xsl:with-param name="custom3UOM" select="$custom3UOM"/>	
+					<xsl:with-param name="level1" select="$level1"/>
+					<xsl:with-param name="level2" select="$level2"/>					
+				</xsl:call-template>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+	<xsl:template name="string-replace-all">
+		<xsl:param name="text" />
+		<xsl:param name="replace" />
+		<xsl:param name="by" />
+		<xsl:choose>
+			<xsl:when test="contains($text, $replace)">
+				<xsl:value-of select="substring-before($text,$replace)" />
+				<xsl:value-of select="$by" />
+				<xsl:call-template name="string-replace-all">
+					<xsl:with-param name="text" select="substring-after($text,$replace)" />
+					<xsl:with-param name="replace" select="$replace" />
+					<xsl:with-param name="by" select="$by" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$text" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:variable name="doublequote">"</xsl:variable>
+	<xsl:variable name="escapeddoublequote">""</xsl:variable>	
+
+	<xsl:template name="doOutput">
+		<xsl:param name="area"/>
+		<xsl:param name="count"/>
+		<xsl:param name="dimensionGroupFolder"/>
+		<xsl:param name="dimensionGroupName"/>
+		<xsl:param name="dimensionName"/>
+		<xsl:param name="height"/>
+		<xsl:param name="length"/>
+		<xsl:param name="volume"/>
+		<xsl:param name="wallArea"/>
+		<xsl:param name="zone"/>
+		<xsl:param name="zc1"/>
+		<xsl:param name="zc2"/>
+		<xsl:param name="Division_StartPhase"/>
+		<xsl:param name="Division_EndPhase"/>
+		<xsl:param name="Division_Location"/>
+		<xsl:param name="Division_Function"/>
+		<xsl:param name="Division_Other"/>			
+		<xsl:param name="weight"/>
+		<xsl:param name="weightUOM"/>
+		<xsl:param name="custom1Name"/>
+		<xsl:param name="custom1Value"/>
+		<xsl:param name="custom1UOM"/>
+		<xsl:param name="custom2Name"/>
+		<xsl:param name="custom2Value"/>
+		<xsl:param name="custom2UOM"/>
+		<xsl:param name="custom3Name"/>
+		<xsl:param name="custom3Value"/>
+		<xsl:param name="custom3UOM"/>
+		<xsl:param name="level1"/>
+		<xsl:param name="level2"/>		
+		<DI>
+			<Version>2.0</Version>
+			<xsl:if test="string-length($area) != 0">
+				<Area>
+					<xsl:value-of select="$area"/>
+				</Area>                          
+			</xsl:if>
+			<xsl:if test="string-length($count) != 0">
+				<Count>
+					<xsl:value-of select="$count"/>
+				</Count>                          
+			</xsl:if>
+			<xsl:if test="string-length($dimensionGroupFolder) != 0">
+				<xsl:variable name="dimensionGroupFolderEscaped">
+					<xsl:call-template name="string-replace-all">
+						<xsl:with-param name="text" select="$dimensionGroupFolder" />
+						<xsl:with-param name="replace" select="$doublequote" />
+						<xsl:with-param name="by" select="$escapeddoublequote" />
+					</xsl:call-template>
+				</xsl:variable>
+				<!--<xsl:variable name="dimensionGroupFolderEscaped" select="translate($dimensionGroupFolder, '&quot;', '&quot;&quot;' )"/> -->
+				<Folder>"<xsl:value-of select="$dimensionGroupFolderEscaped"/>"</Folder>                     
+			</xsl:if>
+			<xsl:if test="string-length($dimensionGroupName) != 0">
+				<xsl:variable name="dimensionGroupNameEscaped">
+					<xsl:call-template name="string-replace-all">
+						<xsl:with-param name="text" select="$dimensionGroupName" />
+						<xsl:with-param name="replace" select="$doublequote" />
+						<xsl:with-param name="by" select="$escapeddoublequote" />
+					</xsl:call-template>
+				</xsl:variable>
+				<!--<xsl:variable name="dimensionGroupNameEscaped" select="translate($dimensionGroupName, '&quot;', '&quot;&quot;' )"/>-->
+				<DimensionGroup>"<xsl:value-of select="$dimensionGroupNameEscaped"/>"</DimensionGroup>
+				<Measurement>"<xsl:value-of select="$dimensionGroupNameEscaped"/>"</Measurement>
+			</xsl:if>
+			<xsl:if test="string-length($dimensionName) != 0">
+				<Dimension>
+					<xsl:value-of select="$dimensionName"/>
+				</Dimension>                          
+			</xsl:if>
+			<xsl:if test="string-length($height) != 0">
+				<Height>
+					<xsl:value-of select="$height"/>
+				</Height>                          
+			</xsl:if>
+			<xsl:if test="string-length($length) != 0">
+				<Length>
+					<xsl:value-of select="$length"/>
+				</Length>                          
+			</xsl:if>
+			<xsl:if test="string-length($volume) != 0">
+				<Volume>
+					<xsl:value-of select="$volume"/>
+				</Volume>                          
+			</xsl:if>
+			<xsl:if test="string-length($wallArea) != 0">
+				<WallArea>
+					<xsl:value-of select="$wallArea"/>
+				</WallArea>                          
+				<VerticalArea>
+					<xsl:value-of select="$wallArea"/>
+				</VerticalArea>                          
+			</xsl:if>
+			<xsl:if test="string-length($zone) != 0">
+				<Zone>
+					<xsl:value-of select="$zone"/>
+				</Zone>
+			</xsl:if>
+			<xsl:if test="string-length($zone) != 0">
+				<ZC1>
+					<xsl:value-of select="$zone"/>
+				</ZC1>
+			</xsl:if>
+			<xsl:if test="string-length($Division_StartPhase) != 0">
+				<ZC2>
+					<xsl:value-of select="$Division_StartPhase"/>
+				</ZC2>
+			</xsl:if>		
+			<xsl:if test="string-length($Division_StartPhase) != 0">
+				<StartPhaseDivision>
+					<xsl:value-of select="$Division_StartPhase"/>
+				</StartPhaseDivision>
+			</xsl:if>			
+			<xsl:if test="string-length($Division_EndPhase) != 0">
+				<EndPhaseDivision>
+					<xsl:value-of select="$Division_EndPhase"/>
+				</EndPhaseDivision>
+			</xsl:if>
+			<xsl:if test="string-length($Division_Location) != 0">
+				<LocationDivision>
+					<xsl:value-of select="$Division_Location"/>
+				</LocationDivision>
+			</xsl:if>
+			<xsl:if test="string-length($Division_Function) != 0">
+				<FunctionDivision>
+					<xsl:value-of select="$Division_Function"/>
+				</FunctionDivision>
+			</xsl:if>
+			<xsl:if test="string-length($Division_Other) != 0">
+				<OtherDivision>
+					<xsl:value-of select="$Division_Other"/>
+				</OtherDivision>
+			</xsl:if>
+			<xsl:if test="string-length($weight) != 0">
+				<WeightValue>
+					<xsl:value-of select="$weight"/>
+				</WeightValue>
+				<WeightUnit>
+					<xsl:value-of select="$weightUOM"/>
+				</WeightUnit>
+			</xsl:if>
+			<xsl:if test="string-length($custom1Name) != 0">
+				<Custom1Name>
+					<xsl:value-of select="$custom1Name"/>
+				</Custom1Name>
+				<Custom1Value>
+					<xsl:value-of select="$custom1Value"/>
+				</Custom1Value>
+				<Custom1Unit>
+					<xsl:value-of select="$custom1UOM"/>
+				</Custom1Unit>
+			</xsl:if>
+			<xsl:if test="string-length($custom2Name) != 0">
+				<Custom2Name>
+					<xsl:value-of select="$custom2Name"/>
+				</Custom2Name>
+				<Custom2Value>
+					<xsl:value-of select="$custom2Value"/>
+				</Custom2Value>
+				<Custom2Unit>
+					<xsl:value-of select="$custom2UOM"/>
+				</Custom2Unit>
+			</xsl:if>
+			<xsl:if test="string-length($custom3Name) != 0">
+				<Custom3Name>
+					<xsl:value-of select="$custom3Name"/>
+				</Custom3Name>
+				<Custom3Value>
+					<xsl:value-of select="$custom3Value"/>
+				</Custom3Value>
+				<Custom3Unit>
+					<xsl:value-of select="$custom3UOM"/>
+				</Custom3Unit>
+			</xsl:if>			
+			<xsl:choose>
+				<xsl:when test="($level1 = 'Structural Foundations') or ($level2 = 'Structural Foundations') or ($dimensionGroupFolder = 'Structural Foundations') or ($level1 = 'Structural Foundations') or ($level2 = 'Structural Foundations') or ($dimensionGroupFolder = 'Structural Foundations')">
+					<Type>volume</Type>
+					<DisplayType>volume</DisplayType>
+					<MeasureMode>length</MeasureMode>
+				</xsl:when>
+				<xsl:when test="($level1 = 'Pipe Fittings') or ($level2 = 'Pipe Fittings') or ($dimensionGroupFolder = 'Pipe Fittings') or ($level1 = 'Pipe Fittings') or ($level2 = 'Pipe Fittings') or ($dimensionGroupFolder = 'Pipe Fittings')">
+					<Type>count</Type>
+					<DisplayType>count</DisplayType>
+					<MeasureMode>count</MeasureMode>
+				</xsl:when>
+				<xsl:when test="(($level1 = 'Walls') or ($level2 = 'Walls') or ($dimensionGroupFolder = 'Walls') or ($level1 = 'Walls') or ($level2 = 'Walls') or ($dimensionGroupFolder = 'Walls')) and (string-length($area) != 0)">
+					<Type>area</Type>
+					<DisplayType>area</DisplayType>
+					<MeasureMode>area</MeasureMode>
+				</xsl:when>
+				<xsl:when test="($level1 = 'Duct Fittings') or ($level2 = 'Duct Fittings') or ($dimensionGroupFolder = 'Duct Fittings') or ($level1 = 'Duct Fittings') or ($level2 = 'Duct Fittings') or ($dimensionGroupFolder = 'Duct Fittings')">
+					<Type>count</Type>
+					<DisplayType>count</DisplayType>
+					<MeasureMode>count</MeasureMode>
+				</xsl:when>
+				<xsl:when test="($level1 = 'Ducts') or ($level2 = 'Ducts') or ($dimensionGroupFolder = 'Ducts') or ($level1 = 'Ducts') or ($level2 = 'Ducts') or ($dimensionGroupFolder = 'Ducts')">
+					<Type>length</Type>
+					<DisplayType>length</DisplayType>
+					<MeasureMode>length</MeasureMode>
+				</xsl:when>	
+				<xsl:when test="($level1 = 'Windows') or ($level2 = 'Windows') or ($dimensionGroupFolder = 'Windows') or ($dimensionGroupFolder = '07 WINDOWS') or ($level1 = 'Windows') or ($level2 = 'Windows') or ($dimensionGroupFolder = 'Windows') or ($dimensionGroupFolder = '07 WINDOWS')">
+					<Type>count</Type>
+					<DisplayType>count</DisplayType>
+					<MeasureMode>count</MeasureMode>
+				</xsl:when>
+				<xsl:when test="($level1 = 'Doors') or ($level2 = 'Doors') or ($dimensionGroupFolder = 'Doors') or ($dimensionGroupFolder = '08 EXTERNAL DOORS') or ($dimensionGroupFolder = '11 INTERNAL DOORS') or ($level1 = 'Doors') or ($level2 = 'Doors') or ($dimensionGroupFolder = 'Doors') or ($dimensionGroupFolder = '08 EXTERNAL DOORS') or ($dimensionGroupFolder = '11 INTERNAL DOORS')">
+					<Type>count</Type>
+					<DisplayType>count</DisplayType>
+					<MeasureMode>count</MeasureMode>
+				</xsl:when>
+			</xsl:choose>
+		</DI>
+	</xsl:template> 
+</xsl:stylesheet> 
